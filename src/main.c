@@ -6,10 +6,11 @@
 /*   By: dtolmaco <dtolmaco@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 10:31:16 by dtolmaco          #+#    #+#             */
-/*   Updated: 2023/12/08 19:15:59 by dtolmaco         ###   ########.fr       */
+/*   Updated: 2023/12/09 17:42:30 by dtolmaco         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+// boring one
 #include "../headers/so_long.h"
 
 int	on_destroy(t_game *game)
