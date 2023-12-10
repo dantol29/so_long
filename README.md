@@ -135,17 +135,162 @@ void	fill_map(t_game *game, int lines, char *map)
 	close(file); // close file
 }
 ```
-12. Map rules
-13. Error handling
-14. Flood fill to find a valid path
-15. Player movement
-16. Coins and exit
-17. Idle animation
-18. Rendering
-19. Moves counter in the console
-20. Moves counter on the screen
-21. Makefile adjustment
-22. ESC and close button
-23. Enemies
-24. Enemies movement
-25. Go through the exit
+### 12. Map rules
+
+In progress
+### 13. Error handling
+
+You must display "Error\n" followed by an explicit message if a map is not valid
+### 14. Valid path
+
+There must be a valid path to the exit and every coin.
+
+I used flood fill algoritmh to check if there is a path
+```
+int	validmove(t_game *game, int **visited, int row, int col)
+{
+	return (game->map[row][col] != '1' && !visited[row][col]); // checks if it is not a wall and if it haven t been alredy visited
+}
+
+void	floodfill(t_game *game, int row, int col, int **visited)
+{
+	if (!validmove(game, visited, row, col) || visited[row][col])
+		return ;
+	if (game->map[row][col] == 'C') // if it is a coin 
+		game->flood_fill_coins += 1;
+	visited[row][col] = 1; // mark areas as visited
+	floodfill(game, row - 1, col, visited); // up
+	floodfill(game, row + 1, col, visited); // down
+	floodfill(game, row, col - 1, visited); // left
+	floodfill(game, row, col + 1, visited); // right
+}
+
+void	player_position(t_game *game, int i, int *player_col, int *player_row) // function to find the player
+{
+	int	j;
+
+	j = 0;
+	game->flood_fill_coins = 0;
+	game->coins = 0;
+	while (game->map[i][j])
+	{
+		if (game->map[i][j] == 'P')
+		{
+			*player_row = i;
+			*player_col = j;
+			break ;
+		}
+		j++;
+	}
+}
+
+void	exit_position(t_game *game) // function to find the exit
+{
+	int	j;
+	int	i;
+
+	i = 0;
+	while (game->map[i])
+	{
+		j = 0;
+		while (game->map[i][j])
+		{
+			if (game->map[i][j] == 'E')
+			{
+				game->exit_row = i;
+				game->exit_col = j;
+			}
+			if (game->map[i][j] == 'C')
+				game->coins += 1;
+			j++;
+		}
+		i++;
+	}
+}
+
+int	valid_path(t_game *game)
+{
+	int	i;
+	int	p_row;
+	int	p_col;
+	int	**visited;
+
+	visited = ft_calloc(game->map_rows, sizeof(int *)); // allocate memory to store visited areas
+	i = 0;						// I use calloc to prevent uninitialised value error
+	while (i < game->map_rows)
+	{
+		visited[i] = ft_calloc(game->map_cols, sizeof(int *));
+		i++;
+	}
+	i = 0;
+	while (game->map[i])
+	{
+		player_position(game, i, &p_col, &p_row); // find player position on the map
+		i++;
+	}
+	exit_position(game); // find where exit is located on the map
+	floodfill(game, p_row, p_col, visited); // start algorithm
+	i = visited[p_row][p_col] && visited[game->exit_row][game->exit_col]; // if the exit area is not visited it means there is no valid path
+	free_visited(visited, game); // free memory
+	if (game->flood_fill_coins != game->coins || !i) // if the algorithm could not find the same amount of coins as the map has or i(exit is unreachable) is not true
+		return (1);
+	return (0);
+}
+```
+### 15. Player movement
+
+```
+void	move_right(t_game *game, int i, int j)
+{
+	if (game->map[j][i + 1] == 'C') // if it is a coin, update score
+		game->score += 1;
+	else if (game->map[j][i + 1] == 'E' && game->coins == game->score) // if it is an exit and the player collected all coins
+		on_destroy(game);
+	else if (game->map[j][i + 1] == 'E') // if it is an exit and player did not collect every coin
+		return ;
+	game->moves += 1; // update moves counter
+	game->map[j][i] = '0'; // update map
+	game->map[j][i + 1] = 'P'; // update map
+	put_player(game, i + 1, j); // render player on the screen
+	mlx_put_image_to_window(game->mlx, game->window, \
+	game->textures.ground, 0 + i * 32, 0 + (j * 32)); // render ground on the screen
+}
+
+void	update_player_position(t_game *game, int key)
+{
+	int		i;
+	int		j;
+	char	*moves;
+
+	i = game->x; // get player current position
+	j = game->y; // get player current position
+	if (key == 115 && game->map[j + 1][i] != '1') // if s is pressed and next tile is not a wall
+		move_top(game, i, j);
+	else if (key == 119 && game->map[j - 1][i] != '1') // if w is pressed and next tile is not a wall
+		move_down(game, i, j);
+	else if (key == 97 && game->map[j][i - 1] != '1') // if a is pressed and next tile is not a wall
+		move_left(game, i, j);
+	else if (key == 100 && game->map[j][i + 1] != '1') // if d is pressed and next tile is not a wall
+		move_right(game, i, j);
+}
+
+int	key_hook(int keycode, t_game *game)
+{
+	if (keycode == 119 || keycode == 115 \ // if w/a/s/d is pressed
+	|| keycode == 100 || keycode == 97)
+		update_player_position(game, keycode);
+	else if (keycode == 65307)
+		on_destroy(game);
+	return (0);
+}
+```
+17. Coins and exit
+18. Idle animation
+19. Rendering
+20. Moves counter in the console
+21. Moves counter on the screen
+22. Makefile adjustment
+23. ESC and close button
+24. Enemies
+25. Enemies movement
+26. Go through the exit
