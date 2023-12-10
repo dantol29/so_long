@@ -369,7 +369,7 @@ void	score(t_game *game)
 	}
 }
 ```
-18. Idle animation
+### 18. Idle animation
 
 ```
 void	right_animation(t_game *game, int width, int height)
@@ -391,3 +391,18 @@ void	draw_frame(t_game *game)
 }
 mlx_loop_hook(game.mlx, (int (*)(void *))draw_frame, &game); // call function draw_frame() every frame
 ```
+### Spawning enemies
+
+It is not allowed to manually place them on the map, so I came up with simple solution.
+
+During the process of reading the map I count how many ground tiles(0) the map has. After I reach the number 15 I place the zombie and set counter to zero.
+
+### Moving enemies
+
+Enemies movement in my game is far from perfect. I call zombie_move function every time the player has moved, so it is more like chess:) Ideally it has to be done after every n amount of frames.
+
+To make enemies movement unpredictable I used rand() function that randomly creates one number between 1 and 4.
+
+### Conclusion 
+
+My game definitely has to be polished, but if you are from 42 I would not recommend to spend too much time on this project. You will be able to explore game development more during Cub3D project 
