@@ -239,6 +239,9 @@ int	valid_path(t_game *game)
 ```
 ### 15. Player movement
 
+There are two ways to handle player movement. To render the whole map every time the player moves (mlx_clear_window) or to render only sprites that have changed.
+
+I find second approach much better in terms of optimization, that is why I chose it.
 ```
 void	move_right(t_game *game, int i, int j)
 {
@@ -284,13 +287,75 @@ int	key_hook(int keycode, t_game *game)
 	return (0);
 }
 ```
-17. Coins and exit
+### 16. Moves counter on the screen
+
+MiniLibX is not able to clean specific area of the screen, only the whole screen(mlx_clear_window). That is why mlx_string_put() is not a solution.
+
+The only possile solution is to display the image of the digit and update it with the help of mlx_put_image_to_window()
+```
+void	put_digit(t_game *game, int digit, int i)
+{
+	if (digit == 0)
+		mlx_put_image_to_window(game->mlx, game->window, \
+		game->digits.zero, 100 - (i * 16), (game->map_rows + 1) * 32);
+	else if (digit == 1)
+		mlx_put_image_to_window(game->mlx, game->window, \
+		game->digits.one, 100 - (i * 16), (game->map_rows + 1) * 32);
+	else if (digit == 2)
+		mlx_put_image_to_window(game->mlx, game->window, \
+		game->digits.two, 100 - (i * 16), (game->map_rows + 1) * 32);
+	else if (digit == 3)
+		mlx_put_image_to_window(game->mlx, game->window, \
+		game->digits.three, 100 - (i * 16), (game->map_rows + 1) * 32);
+	else if (digit == 4)
+		mlx_put_image_to_window(game->mlx, game->window, \
+		game->digits.four, 100 - (i * 16), (game->map_rows + 1) * 32);
+	else if (digit == 5)
+		mlx_put_image_to_window(game->mlx, game->window, \
+		game->digits.five, 100 - (i * 16), (game->map_rows + 1) * 32);
+}
+
+void	score(t_game *game)
+{
+	int	i;
+	int	digit;
+	int	moves;
+
+	mlx_string_put(game->mlx, game->window, 0, \
+	(game->map_rows + 2) * 32 -20, 0xFFFFFF, "Moves :"); // put "Moves" on the screen
+	i = 0;
+	moves = game->moves; // get the current amount of moves
+	while (i < 4)
+	{
+		digit = moves % 10; // get last digit
+		moves = moves / 10; // move to the next one
+		if (digit > 5)
+			put_digit_2(game, digit, i); // put digit on the screen
+		else
+			put_digit(game, digit, i); // put digit on the screen
+		i++;
+	}
+}
+```
 18. Idle animation
-19. Rendering
-20. Moves counter in the console
-21. Moves counter on the screen
-22. Makefile adjustment
-23. ESC and close button
-24. Enemies
-25. Enemies movement
-26. Go through the exit
+
+```
+void	right_animation(t_game *game, int width, int height)
+{
+	if (game->current_frame == 0 || game->current_frame == 1)
+		mlx_put_image_to_window(game->mlx, game->window, \
+		game->player.player_idle_right_1, 0 + width * 32, 0 + (height * 32));
+	else if (game->current_frame == 2 || game->current_frame == 3)
+		mlx_put_image_to_window(game->mlx, game->window, \
+		game->player.player_idle_right_2, 0 + width * 32, 0 + (height * 32));
+}
+
+void	draw_frame(t_game *game)
+{
+	game->current_frame = (game->current_frame + 1) % 4; // divide on 4 frames for animation
+	put_player(game, game->x, game->y); // put idle animation
+	score(game); // display score
+	usleep(270000); // wait 2,7 miliseconds
+}
+mlx_loop_hook(game.mlx, (int (*)(void *))draw_frame, &game); // call function draw_frame() every frame
+```
