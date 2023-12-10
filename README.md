@@ -146,6 +146,29 @@ void fill_map(t_game *game, int lines, char *map) {
 ```
 ### 12. Map rules
 
+1. Has to be rectangular
+
+2. Has to be surrounded by walls
+
+3. No empty lines anywhere
+
+4. Has to have a valid path to every coin and exit
+
+5. No other characters besides 1, 0, C, E, P
+
+6. Only one player and exit
+
+7. You have to handle the case if the coin is blocked by the exit
+
+8. Empty map case
+
+9. Invalid extension (only .ber allowed)
+
+10. Map does not exist
+
+11. No arguments or to many arguments 
+
+12. Check every error case with valgrind (in case of uninitialised error use calloc)
 In progress
 ### 13. Error handling
 
