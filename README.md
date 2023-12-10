@@ -118,22 +118,31 @@ void	free_textures(t_game *game)
 
 Make a 2d array and fill it
 ```
-void	fill_map(t_game *game, int lines, char *map)
-{
-	int	file;
-	int	i;
+// Function to read lines from a file and store them in a 2D array
+void fill_map(t_game *game, int lines, char *map) {
+    int file;
+    int i;
 
-	i = 0;
-	file = open(map, O_RDWR); // open file
-	game->map = malloc(sizeof(char *) * (lines + 1)); // allocate memory to store the map
-	game->map[0] = get_next_line(file); // fill each element of the array line by line
-	while (i < lines)
-	{
-		i++;
-		game->map[i] = get_next_line(file);
-	}
-	close(file); // close file
+    // Open the file for reading and writing
+    file = open(map, O_RDWR);
+
+    // Allocate memory for the map (lines + 1 for the NULL terminator)
+    game->map = malloc(sizeof(char *) * (lines + 1));
+
+    // Fill the first element of the array with the first line from the file
+    game->map[0] = get_next_line(file);
+
+    // Fill the rest of the array line by line
+    i = 0;
+    while (i < lines) {
+        i++;
+        game->map[i] = get_next_line(file);
+    }
+
+    // Close the file after reading
+    close(file);
 }
+
 ```
 ### 12. Map rules
 
