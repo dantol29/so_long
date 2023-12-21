@@ -84,12 +84,12 @@ static int	advanced_checks(t_game *game, int linecount, char *map)
 		return (1);
 	if (check_rows(game, linecount) == 1)
 	{
-		write(1, "Error\nThe map must be surrounded by walls/rectangular\n", 58);
+		write(1, "Error\nThe map must be surrounded by walls/rectangular\n", 55);
 		return (1);
 	}
 	if (check_elements(game) == 1)
 	{
-		write(1, "Error\nThe map does not have all components\n", 57);
+		write(1, "Error\nThe map does not have all components\n", 44);
 		return (1);
 	}
 	if (check_playable(game) == 1)

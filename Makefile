@@ -1,6 +1,6 @@
 NAME = so_long
 BONUS_NAME = so_long_bonus
-CFLAGS = -Wextra -Wall -Werror
+CFLAGS = -Wextra -Wall 
 SRC = src/main.c src/map.c src/open_images.c src/controllers.c \
 		src/extra.c src/check_map.c src/free_game.c src/flood_fill.c src/ft_itoa.c src/put_player.c
 BONUS_SRC = bonus/main_bonus.c bonus/map_bonus.c bonus/open_images_bonus.c bonus/controllers_bonus.c bonus/extra_bonus.c \

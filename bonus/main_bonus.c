@@ -101,7 +101,7 @@ int	main(int argc, char **argv)
 		add_graphics(&game);
 		mlx_key_hook(game.window, key_hook, &game);
 		mlx_hook(game.window, 17, 0, on_destroy, &game);
-		mlx_loop_hook(game.mlx, (int (*)(void *))draw_frame, &game);
+		mlx_loop_hook(game.mlx, (void (*)(t_game *))draw_frame, &game);
 		mlx_loop(game.mlx);
 	}
 	else
